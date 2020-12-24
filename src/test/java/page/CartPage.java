@@ -18,7 +18,7 @@ public class CartPage extends AbstractPage implements IWaitable{
     private final Logger logger = LogManager.getRootLogger();
     private final String BASE_URL = "https://www.underarmour.com/en-us/cart";
 
-    @FindBy(xpath = "//button[@class='btn btn-primary btn-block promo-code-btn t-apply_code bfx-coupon-form-submit']")
+    @FindBy(xpath = "//button[@class='js-update-cart-product-global js-add-to-cart btn btn-primary g-button_base g-button_primary--black update-cart-product-global-style']")
     private WebElement applyPromoCodeButton;
 
     @FindBy(xpath = "//*[@id='couponCode']")
@@ -44,13 +44,13 @@ public class CartPage extends AbstractPage implements IWaitable{
 
     @FindBy(xpath = "//div[@class='g-email-pop-modal-close g-modal-close-button']")
     private WebElement closeBannerButton;
-    private final By promoCodeErrorMessageLocator = By.xpath("//*[@id='invalidCouponCode']");
-    private final By greyColorButtonLocator = By.xpath("//a[@alt='Gray']");
-    private final By addToBagButtonLocator = By.xpath("//button[@data-addto-bag]");
+
     @FindBy(xpath ="//a[@data-cmp='editBasketProduct']")
     private WebElement editButton;
 
-
+    private final By promoCodeErrorMessageLocator = By.xpath("//*[@id='invalidCouponCode']");
+    private final By greyColorButtonLocator = By.xpath("//a[@alt='Gray']");
+    private final By addToBagButtonLocator = By.xpath("//button[@data-addto-bag]");
 
     public CartPage(WebDriver driver) {
         super(driver);
