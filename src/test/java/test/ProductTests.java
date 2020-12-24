@@ -99,7 +99,7 @@ public class ProductTests extends CommonConditions {
                 .selectSize(8)
                 .addToBag()
                 .goToCartPage()
-                .enterPromoCode()
+                .enterPromoCode("PACKSACK")
                 .getPromoCodeErrorMessage();
         assertThat(expectedErrorPromoCodeMessage,is(equalTo("Promo code cannot be added to your bag")));
     }

@@ -42,11 +42,14 @@ public class CartPage extends AbstractPage implements IWaitable{
     @FindBy(xpath = "//a[@class='b-lineitem_itemname bfx-product-name']")
     private WebElement productNameField;
 
-    private final By closeBannerButtonLocator = By.xpath("//div[@class='g-email-pop-modal-close g-modal-close-button']");
+    @FindBy(xpath = "//div[@class='g-email-pop-modal-close g-modal-close-button']")
+    private WebElement closeBannerButton;
     private final By promoCodeErrorMessageLocator = By.xpath("//*[@id='invalidCouponCode']");
     private final By greyColorButtonLocator = By.xpath("//a[@alt='Gray']");
     private final By addToBagButtonLocator = By.xpath("//button[@data-addto-bag]");
-    private final By editButtonLocator = By.xpath("//a[@data-cmp='editBasketProduct']");
+    @FindBy(xpath ="//a[@data-cmp='editBasketProduct']")
+    private WebElement editButton;
+
 
 
     public CartPage(WebDriver driver) {
@@ -61,8 +64,7 @@ public class CartPage extends AbstractPage implements IWaitable{
     }
 
     public CartPage closeBanner() {
-        new WebDriverWait(driver,WAIT_TIMEOUT_SECONDS).until(ExpectedConditions.elementToBeClickable(closeBannerButtonLocator))
-                .click();
+       closeBannerButton.click();
         return this;
     }
 
@@ -75,7 +77,7 @@ public class CartPage extends AbstractPage implements IWaitable{
     }
 
     public CartPage changeColorOfProductInCart(){
-        new WebDriverWait(driver,WAIT_TIMEOUT_SECONDS).until(ExpectedConditions.elementToBeClickable(editButtonLocator)).click();
+        new WebDriverWait(driver,WAIT_TIMEOUT_SECONDS).until(ExpectedConditions.elementToBeClickable(editButton)).click();
         WebElement changeColorToGrayButton = wait.until(new Function<WebDriver, WebElement>() {
             public WebElement apply(WebDriver driver) {
                 return driver.findElement(greyColorButtonLocator);
@@ -103,8 +105,8 @@ public class CartPage extends AbstractPage implements IWaitable{
         return result;
     }
 
-    public CartPage enterPromoCode(){
-        inputPromoCode.sendKeys("testdata.promocode");
+    public CartPage enterPromoCode(String promoCode){
+        inputPromoCode.sendKeys(promoCode);
         applyPromoCodeButton.click();
         logger.info("Promocode entered!");
         return this;
@@ -124,4 +126,8 @@ public class CartPage extends AbstractPage implements IWaitable{
             .withTimeout(30,SECONDS)
             .pollingEvery(5, SECONDS)
             .ignoring(NoSuchElementException.class);
+    Wait<WebDriver> waitInteractable = new FluentWait<WebDriver>(driver)
+            .withTimeout(30,SECONDS)
+            .pollingEvery(5, SECONDS)
+            .ignoring(ElementNotInteractableException.class);
 }
