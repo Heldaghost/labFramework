@@ -18,7 +18,7 @@ public class CartPage extends AbstractPage implements IWaitable{
     private final Logger logger = LogManager.getRootLogger();
     private final String BASE_URL = "https://www.underarmour.com/en-us/cart";
 
-    @FindBy(xpath = "//button[@class='js-update-cart-product-global js-add-to-cart btn btn-primary g-button_base g-button_primary--black update-cart-product-global-style']")
+    @FindBy(xpath = "//button[@class='btn btn-primary btn-block promo-code-btn t-apply_code bfx-coupon-form-submit']")
     private WebElement applyPromoCodeButton;
 
     @FindBy(xpath = "//*[@id='couponCode']")
