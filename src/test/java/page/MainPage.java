@@ -14,7 +14,7 @@ public class MainPage extends AbstractPage implements IWaitable {
     private final String BASE_URL = "https://www.underarmour.com/en-us/";
 
     @FindBy(xpath = "//img[@alt='US']")
-    private WebElement changeCountryButton;
+    private WebElement changeCountryToUSButton;
 
     private By buttonMyAccount = By.xpath("//a[@aria-label='My Account']");
     private By buttonAccountToogle = By.xpath("//button[@class='b-header_utility-toggle collapsed'][@aria-label='My Account']");
@@ -36,12 +36,13 @@ public class MainPage extends AbstractPage implements IWaitable {
     @Override
     public MainPage openPage() {
         driver.navigate().to(BASE_URL);
+        logger.info("Main page was opened");
         return this;
     }
 
-    public MainPage changeSiteCountry(){
-        changeCountryButton.click();
-        logger.info("Country has been changed");
+    public MainPage changeSiteCountryToUS(){
+        changeCountryToUSButton.click();
+        logger.info("Country has been changed to US");
         return this;
     }
 
@@ -55,6 +56,7 @@ public class MainPage extends AbstractPage implements IWaitable {
     public MainPage openLogInModalWindow(){
         waitForElementLocatedBy(driver,buttonLogInLocator)
                 .click();
+        logger.info("Log ig window opened");
         return this;
     }
 
@@ -70,6 +72,7 @@ public class MainPage extends AbstractPage implements IWaitable {
     }
 
     public String getRegisterMessage(){
+        logger.info("Register message updated");
        return new WebDriverWait(driver,WAIT_TIMEOUT_SECONDS).until(ExpectedConditions.visibilityOfElementLocated(registerErrorMessageLocator))
                     .getText();
     }
@@ -90,6 +93,7 @@ public class MainPage extends AbstractPage implements IWaitable {
                 .click();
         waitForElementLocatedBy(driver,buttonMyAccount)
                 .click();
+        logger.info("Profile page opened");
         return new ProfilePage(driver);
     }
 

@@ -3,6 +3,9 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import util.AssertAccumulator;
 import page.*;
+
+import java.util.List;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -10,70 +13,77 @@ public class ProductTests extends CommonConditions {
 
     @Test
     public void addProductToCart() {
-        String expectedProduct = new ProductPage(driver)
+        AssertAccumulator assertAccumulator = new AssertAccumulator();
+        List<String> products = new ProductPage(driver,"bottoms/mens-ua-showdown-golf-shorts/1309547.html")
                 .openPage()
                 .closeAdds()
-                .selectSize(8)
+                .selectSize(30)
                 .addToBag()
                 .goToCartPage()
-                .getNameOfProductInCart();
-        Assert.assertEquals(expectedProduct,"Boys' UA Showdown Pants");
+                .getNamesOfProductsInCart();
+        assertAccumulator.accumulate(()->assertThat(products.size(), is(equalTo(1))));
+        assertAccumulator.accumulate(()->assertThat(products.get(0),is(equalTo("Men's UA Showdown Golf Shorts"))));
+        assertAccumulator.release();
     }
 
    @Test
     public void addManyProductsToCart() {
-       String expectedQuantity = new ProductPage(driver)
+       String expectedQuantity = new ProductPage(driver,"bottoms/mens-ua-showdown-golf-shorts/1309547.html")
                 .openPage()
                 .closeAdds()
-                .selectSize(8)
-                .selectQuantity()
+                .selectSize(30)
+                .selectQuantity("10")
                 .addToBag()
                 .goToCartPage()
-                .getQuantityOfProduct();
+                .getQuantityOfProductInCart();
         Assert.assertEquals(expectedQuantity,"10");
     }
 
     @Test
     public void addToWishList() {
-        String expectedName = new ProductPage(driver)
+        AssertAccumulator assertAccumulator = new AssertAccumulator();
+        List<String> productsInWishList = new ProductPage(driver,"bottoms/boys-ua-showdown-pants/193444360967.html")
                 .openPage()
                 .closeAdds()
                 .addToWishList()
                 .openWishListPage()
-                .getTextFromCard();
-        Assert.assertEquals(expectedName,"Boys' UA Showdown Pants");
+                .getProductsInWishList();
+        assertAccumulator.accumulate(()->assertThat(productsInWishList.size(),is(equalTo(1))));
+        assertAccumulator.accumulate(()->assertThat(productsInWishList.get(0),is(equalTo("Boys' UA Showdown Pants"))));
     }
 
     @Test
     public void emptyCart(){
-        String expectedMessage = new CartPage(driver)
-                .openPage()
-                .getEmptyCartMessage();
-        assertThat(expectedMessage, is(equalTo("You have no items in your bag.")));
+        AssertAccumulator assertAccumulator = new AssertAccumulator();
+        CartPage cartPage= new CartPage(driver)
+                .openPage();
+        assertAccumulator.accumulate(()->assertThat(cartPage.getNamesOfProductsInCart().size(), is(equalTo(0))));
+        assertAccumulator.accumulate(()->assertThat(cartPage.getEmptyCartMessage(),is(equalTo("You have no items in your bag."))));
+        assertAccumulator.release();
     }
 
     @Test
     public void changeColorOfProductInCart() {
-        boolean isColorGray = new ProductPage(driver)
+        boolean isColorChanged = new ProductPage(driver,"bottoms/boys-ua-showdown-pants/193444360967.html")
                 .openPage()
                 .closeAdds()
                 .selectSize(8)
                 .addToBag()
                 .goToCartPage()
                 .closeBanner()
-                .changeColorOfProductInCart()
-                .isColorGray();
-        assertThat(isColorGray, is(equalTo(true)));
+                .editProductItemInCart()
+                .changeColorOfProduct("Gray");
+        assertThat(isColorChanged, is(equalTo(true)));
     }
 
     @Test
     public void freeShippingTest()
     {
         AssertAccumulator assertAccumulator = new AssertAccumulator();
-        CartPage cartPage = new ProductPage(driver)
+        CartPage cartPage = new ProductPage(driver,"bottoms/mens-ua-showdown-golf-shorts/1309547.html")
                 .openPage()
-                .changeSiteCountry()
-                .selectSize(8)
+                .changeSiteCountryToUS()
+                .selectSize(30)
                 .addToBag()
                 .goToCartPage();
         String expectedPrice = cartPage.getShippingCost();
@@ -84,24 +94,22 @@ public class ProductTests extends CommonConditions {
     }
 
     @Test
-    public void colorFilterTest() throws InterruptedException {
-        String expectedColorOfProduct = new ProductListPage(driver).openPage()
-                .filterByPinkColor()
-                .getColorOfFilteredProduct();
-        assertThat(expectedColorOfProduct,is(equalTo("Men's Project Rock Charged Cotton® Fleece Shorts, Pink")));
+    public void colorFilterTest(){
+        boolean isFiltered = new ProductListPage(driver).openPage()
+                .FilterByColor("Navy");
+        assertThat(isFiltered,is(equalTo(true)));
     }
 
     @Test
     public void enterWrongPromoTest(){
-        String expectedErrorPromoCodeMessage = new ProductPage(driver)
+        String expectedErrorPromoCodeMessage = new ProductPage(driver,"bottoms/mens-ua-showdown-golf-shorts/1309547.html")
                 .openPage()
-                .changeSiteCountry()
-                .selectSize(8)
+                .changeSiteCountryToUS()
+                .selectSize(30)
                 .addToBag()
                 .goToCartPage()
                 .enterPromoCode("PACKSACK")
                 .getPromoCodeErrorMessage();
         assertThat(expectedErrorPromoCodeMessage,is(equalTo("Promo code cannot be added to your bag")));
     }
-
 }

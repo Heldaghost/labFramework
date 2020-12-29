@@ -8,11 +8,11 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
+import sun.jvm.hotspot.runtime.win32_amd64.Win32AMD64JavaThreadPDAccess;
 
 
 public class ProductPage extends AbstractPage implements IWaitable {
-    private static final String PANTS_PAGE_URL = "https://www.underarmour.com/en-us/p/bottoms/boys-ua-showdown-pants/193444360950.html";
+    private static String PRODUCT_URL;
     private final Logger logger = LogManager.getRootLogger();
 
     @FindBy(xpath = "//button[@class='close']")
@@ -27,11 +27,8 @@ public class ProductPage extends AbstractPage implements IWaitable {
     @FindBy(xpath = "//select[@id='quantity-1']")
     private WebElement quantityList;
 
-    @FindBy(xpath = "//select[@id='quantity-1']/option[@value=10]")
-    private WebElement selectQuantityButton;
-
     @FindBy(xpath = "//img[@alt='US']")
-    private WebElement changeCountryButton;
+    private WebElement changeSiteCountryToUSButton;
 
     @FindBy(xpath = "//img[@alt='BY']")
     private WebElement closeModalButton;
@@ -42,20 +39,29 @@ public class ProductPage extends AbstractPage implements IWaitable {
     @FindBy(xpath = "//div[@class='b-header-wishlist b-wishlist']")
     private WebElement goToWishListButton;
 
-    public ProductPage(WebDriver driver)
+    private final By selectedAddedToWishListButtonLocator = By.xpath("//div[@class='js-whislist-icon product-added b-product_name-fav_selectButton']");
+    private String buttonSizeLocator = "//a[@data-size-attr=%s]";
+    private String quantitySelectionLabelLocator = "//select[@id='quantity-1']/option[@value=%s]";
+    private final By activeSizeButtonLocator = By.xpath("//a[@class='js-size-select selectable m-active selected']");
+    private final By notEmptyCartButtonLocator = By.xpath("//span[@class='b-header_minicart-icon']/span[@style='display: block;']");
+
+    public ProductPage(WebDriver driver, String partOfProductURL)
     {
         super(driver);
         PageFactory.initElements(this.driver,this);
+        PRODUCT_URL = String.format("https://www.underarmour.com/en-us/p/%s", partOfProductURL);
     }
 
     @Override
     public ProductPage openPage() {
-        driver.get(PANTS_PAGE_URL);
+        driver.get(PRODUCT_URL);
+        logger.info("Product page was opened");
         return this;
     }
 
-    public ProductPage changeSiteCountry(){
-        changeCountryButton.click();
+    public ProductPage changeSiteCountryToUS(){
+        changeSiteCountryToUSButton.click();
+        logger.info("Site country changed to US");
         openPage();
         return this;
     }
@@ -63,6 +69,7 @@ public class ProductPage extends AbstractPage implements IWaitable {
     public ProductPage closeAdds() {
         closeModalButton.click();
         closeBannerButton.click();
+        logger.info("Adds closed");
         return this;
     }
     public ProductPage addToWishList() {
@@ -72,37 +79,39 @@ public class ProductPage extends AbstractPage implements IWaitable {
     }
 
     public WishlistPage openWishListPage() {
-        WebElement selectedAddedToWishListButton =  waitForElementLocatedBy(driver,By.xpath("//div[@class='js-whislist-icon product-added b-product_name-fav_selectButton']"));
+        waitForElementLocatedBy(driver,selectedAddedToWishListButtonLocator);
         goToWishListButton.click();
+        logger.info("Wish list page opened");
         return new WishlistPage(driver);
     }
 
     public ProductPage selectSize(int neededSize){
-        String buttonSizeLocator = String.format("//a[@data-size-attr=%s]",neededSize);
-        new WebDriverWait(driver,WAIT_TIMEOUT_SECONDS).until(ExpectedConditions.elementToBeClickable(By.xpath(buttonSizeLocator)))
+        new WebDriverWait(driver,WAIT_TIMEOUT_SECONDS).until(ExpectedConditions.elementToBeClickable(By.xpath(String.format(buttonSizeLocator,neededSize))))
                 .click();
         logger.info("Size selected");
         return this;
     }
 
-    public ProductPage selectQuantity() {
-        WebElement activeSizeButton = waitForElementLocatedBy(driver,By.xpath("//a[@class='js-size-select selectable m-active selected']"));
+    public ProductPage selectQuantity(String quantity) {
+        waitForElementLocatedBy(driver,activeSizeButtonLocator);
         quantityList.click();
-        selectQuantityButton.click();
+        waitForElementLocatedBy(driver,By.xpath(String.format(quantitySelectionLabelLocator, quantity)))
+                .click();
         logger.info("Quantity selected!");
         return this;
     }
 
     public ProductPage addToBag(){
-        WebElement activeSizeButton = waitForElementLocatedBy(driver,By.xpath("//a[@class='js-size-select selectable m-active selected']"));
+        waitForElementLocatedBy(driver,activeSizeButtonLocator);
         addToBagButton.click();
         logger.info("Product added to bag");
         return this;
     }
 
     public CartPage goToCartPage(){
-        WebElement notPourCartButton = waitForElementLocatedBy(driver,By.xpath("//span[@class='b-header_minicart-icon']/span[@style='display: block;']"));
+        waitForElementLocatedBy(driver,notEmptyCartButtonLocator);
         goToCartButton.click();
+        logger.info("Cart page opened");
         return new CartPage(driver);
     }
 }

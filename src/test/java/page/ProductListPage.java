@@ -6,13 +6,12 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.FluentWait;
-import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.util.function.Function;
+import java.util.ArrayList;
+import java.util.List;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
+
 
 public class ProductListPage extends AbstractPage {
     private final Logger logger = LogManager.getRootLogger();
@@ -24,8 +23,9 @@ public class ProductListPage extends AbstractPage {
     @FindBy(xpath = "//img[@alt='BY']")
     private WebElement closeModalButton;
 
-    private final By imageOfFilteredProductLocator = By.xpath("//img[@class='b-tile-image b-tile-hover_image js-tile-hover_image'][@alt=\"Men's Project Rock Charged Cotton® Fleece Shorts\"]");
-    private By pinkColorButtonLocator = By.xpath("//a[@data-analytics-plp-filter-value='Pink']");
+    private String colorFilterButtonLocator = "//a[@data-analytics-plp-filter-value='%s']";
+    private final By filteredElementLocator = By.xpath("//div[@class='b-tile-info']");
+    private String colorComponentOfFilteredElement = "//a[@alt='%s']";
 
     public ProductListPage(WebDriver driver) {
         super(driver);
@@ -36,30 +36,32 @@ public class ProductListPage extends AbstractPage {
     public ProductListPage openPage() {
         driver.navigate().to(BASE_URL);
         closeModalButton.click();
+        logger.info("Product list page opened. Adds closed");
         return this;
     }
 
-    public ProductListPage filterByPinkColor() throws InterruptedException {
+    public boolean FilterByColor(String color){
+        boolean isFiltered = false;
         colorToogle.click();
         ((JavascriptExecutor)driver).executeScript("arguments[0].scrollIntoView();"
                 ,colorToogle);
-        new WebDriverWait(driver,WAIT_TIMEOUT_SECONDS).until(ExpectedConditions.elementToBeClickable(pinkColorButtonLocator)).click();
-        logger.info("Products were filtered");
-        return this;
-    }
-
-    public String getColorOfFilteredProduct(){
-        WebElement imageOfFilteredProduct = wait.until(new Function<WebDriver, WebElement>() {
-            public WebElement apply(WebDriver driver) {
-                return driver.findElement(imageOfFilteredProductLocator);
+        new WebDriverWait(driver,WAIT_TIMEOUT_SECONDS).until(ExpectedConditions.elementToBeClickable(By.xpath(String.format(colorFilterButtonLocator,color))))
+                .click();
+        try {
+            List<WebElement> filteredProductElementsList = driver.findElements(filteredElementLocator);
+            for (WebElement productElement : filteredProductElementsList) {
+                if(productElement.findElement(By.xpath(String.format(colorComponentOfFilteredElement,color)))!= null){
+                    isFiltered = true;
+                }
+                else{
+                    isFiltered=false;
+                }
             }
-        });
-        return imageOfFilteredProduct.getAttribute("Title");
+            logger.info("Products were filtered");
+            return isFiltered;
+        }catch (Exception e) {
+            logger.info("Error in filter");
+            return isFiltered;
+        }
     }
-
-    Wait<WebDriver> wait = new FluentWait<WebDriver>(driver)
-            .withTimeout(30,SECONDS)
-            .pollingEvery(5, SECONDS)
-            .ignoring(NoSuchElementException.class);
-
 }

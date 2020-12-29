@@ -22,12 +22,14 @@ public class ProfilePage extends AbstractPage implements IWaitable{
     @Override
     public ProfilePage openPage() {
         driver.navigate().to(BASE_URL);
+        logger.info("Profile page opened");
         return this;
     }
 
     public String getUserEmail(){
         waitForElementLocatedBy(driver,userProfileOptionsLocator)
                 .click();
+        logger.info("User email found");
        return waitForElementLocatedBy(driver,userEmailAriaLocator)
                .getAttribute("value");
     }

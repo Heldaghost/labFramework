@@ -13,7 +13,7 @@ public class UserAccessTests extends CommonConditions {
         User testUser = UserCreator.withCredentialsFromProperty();
         String expectedErrorMessage = new MainPage(driver)
                 .openPage()
-                .changeSiteCountry()
+                .changeSiteCountryToUS()
                 .openRegisterModalWindow()
                 .registerUser(testUser)
                 .getRegisterMessage();
@@ -25,7 +25,7 @@ public class UserAccessTests extends CommonConditions {
         User testUser = UserCreator.withCredentialsFromProperty();
         String expectedUserEmail = new MainPage(driver)
                 .openPage()
-                .changeSiteCountry()
+                .changeSiteCountryToUS()
                 .openLogInModalWindow()
                 .logIn(testUser)
                 .goToProfilePage()
