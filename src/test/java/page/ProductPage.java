@@ -8,8 +8,6 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import sun.jvm.hotspot.runtime.win32_amd64.Win32AMD64JavaThreadPDAccess;
-
 
 public class ProductPage extends AbstractPage implements IWaitable {
     private static String PRODUCT_URL;
