@@ -21,7 +21,7 @@ public class CartPage extends AbstractPage implements IWaitable{
     private final String BASE_URL = "https://www.underarmour.com/en-us/cart";
 
     Wait<WebDriver> wait;
-    
+
     @FindBy(xpath = "//button[@class='btn btn-primary btn-block promo-code-btn t-apply_code bfx-coupon-form-submit']")
     private WebElement applyPromoCodeButton;
 
