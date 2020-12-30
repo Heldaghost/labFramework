@@ -21,8 +21,7 @@ public class CartPage extends AbstractPage implements IWaitable{
     private final String BASE_URL = "https://www.underarmour.com/en-us/cart";
 
     Wait<WebDriver> wait;
-    Wait<WebDriver> waitForClick;
-
+    
     @FindBy(xpath = "//button[@class='btn btn-primary btn-block promo-code-btn t-apply_code bfx-coupon-form-submit']")
     private WebElement applyPromoCodeButton;
 
@@ -61,10 +60,6 @@ public class CartPage extends AbstractPage implements IWaitable{
                 .withTimeout(30,SECONDS)
                 .pollingEvery(5, SECONDS)
                 .ignoring(NoSuchElementException.class);
-        waitForClick = new FluentWait<WebDriver>(driver)
-                .withTimeout(30,SECONDS)
-                .pollingEvery(5, SECONDS)
-                .ignoring(ElementNotInteractableException.class);
     }
 
     @Override
